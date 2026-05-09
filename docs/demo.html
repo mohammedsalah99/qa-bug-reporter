@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskFlow Pro — Demo App</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --surface: #ffffff;
+    --border: #e3e6ec;
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --success: #22c55e;
+    --text: #1e1e2e;
+    --text-muted: #6b7280;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Navbar ─────────────────────────────── */
+  .navbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: var(--shadow);
+  }
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .navbar-brand svg { width: 24px; height: 24px; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 6px;
+    transition: all .15s;
+    cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: #eef2ff;
+    color: var(--primary);
+  }
+
+  /* ── Layout ─────────────────────────────── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  /* ── Cards ──────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ── Form ───────────────────────────────── */
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  input[type="text"], input[type="email"], input[type="password"],
+  select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: var(--font);
+    margin-bottom: 14px;
+    transition: border-color .15s;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+  .checkbox-row input { width: auto; margin: 0; }
+
+  /* ── Buttons ────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: var(--danger-hover); }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+  .btn-outline:hover { background: #eef2ff; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+  .btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ── Task List ──────────────────────────── */
+  .task-list { list-style: none; }
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--bg);
+    font-size: 14px;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    margin: 0;
+  }
+  .task-item .task-text { flex: 1; }
+  .task-item .task-text.done {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+  .task-priority {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .priority-high { background: #fef2f2; color: #dc2626; }
+  .priority-medium { background: #fffbeb; color: #d97706; }
+  .priority-low { background: #f0fdf4; color: #16a34a; }
+
+  /* ── Toast ──────────────────────────────── */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    background: var(--text);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    animation: slideIn .3s ease;
+    max-width: 340px;
+  }
+  .toast.error { background: var(--danger); }
+  .toast.success { background: #059669; }
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── Table ──────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--text-muted);
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--bg);
+  }
+  tr:hover { background: #fafbfc; }
+
+  .status-chip {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-active { background: #dcfce7; color: #15803d; }
+  .status-inactive { background: #fee2e2; color: #dc2626; }
+
+  /* ── Misc ───────────────────────────────── */
+  .banner {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    padding: 20px 24px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .banner h2 { font-size: 17px; font-weight: 700; }
+  .banner p { font-size: 13px; opacity: .85; margin-top: 4px; }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .hint {
+    background: #eef2ff;
+    border: 1px dashed #a5b4fc;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #4338ca;
+    line-height: 1.6;
+  }
+  .hint strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+      <rect x="9" y="3" width="6" height="4" rx="1"/>
+      <path d="M9 14l2 2 4-4"/>
+    </svg>
+    Demo App
+  </div>
+  <div class="nav-links">
+    <a href="#dashboard" class="active" data-page="dashboard">Dashboard</a>
+    <a href="#tasks" data-page="tasks">Tasks</a>
+    <a href="#settings" data-page="settings">Settings</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- ═══════════════ DASHBOARD ═══════════════ -->
+  <div id="dashboard" class="page active">
+    <h1 class="page-title">Dashboard</h1>
+
+    <div class="hint">
+      <strong>QA Bug Reporter Demo</strong> — interact with this page to generate data for your bug report.
+      Click buttons, fill forms, navigate pages, and trigger errors. Then open the extension and hit "Report Bug".
+    </div>
+
+    <div class="banner">
+      <div>
+        <h2>Welcome back, QA Tester!</h2>
+        <p>You have 3 tasks due today and 2 unread notifications.</p>
+      </div>
+      <button class="btn" style="background:rgba(255,255,255,.2);color:#fff"
+              onclick="fetchNotifications()">
+        View Notifications
+      </button>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:#4f46e5"></span> Quick Actions</div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="createTask()">+ New Task</button>
+          <button class="btn btn-outline" onclick="loadUsers()">Load Users</button>
+          <button class="btn btn-danger" onclick="triggerError()">Trigger Error</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:#22c55e"></span> API Test</div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="fetchSuccess()">API Success</button>
+          <button class="btn btn-danger" onclick="fetchFailure()">API Failure</button>
+          <button class="btn btn-outline" onclick="fetchTimeout()">Slow Request</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#f59e0b"></span> Recent Activity</div>
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Action</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="activityTable">
+          <tr>
+            <td>Alice Chen</td>
+            <td>Created task "Fix login bug"</td>
+            <td><span class="status-chip status-active">Done</span></td>
+            <td>2 min ago</td>
+          </tr>
+          <tr>
+            <td>Bob Martinez</td>
+            <td>Updated profile settings</td>
+            <td><span class="status-chip status-active">Done</span></td>
+            <td>15 min ago</td>
+          </tr>
+          <tr>
+            <td>Carol Singh</td>
+            <td>Deleted expired session</td>
+            <td><span class="status-chip status-inactive">Failed</span></td>
+            <td>1 hr ago</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TASKS ═══════════════ -->
+  <div id="tasks" class="page">
+    <h1 class="page-title">Tasks</h1>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="dot" style="background:#4f46e5"></span> Task List
+      </div>
+      <ul class="task-list" id="taskList">
+        <li class="task-item">
+          <input type="checkbox" id="task-1" onchange="toggleTask(this)">
+          <span class="task-text">Review pull request #142</span>
+          <span class="task-priority priority-high">High</span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox" id="task-2" onchange="toggleTask(this)">
+          <span class="task-text">Write integration tests for auth module</span>
+          <span class="task-priority priority-medium">Medium</span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox" id="task-3" checked onchange="toggleTask(this)">
+          <span class="task-text done">Update documentation for v2.0</span>
+          <span class="task-priority priority-low">Low</span>
+        </li>
+        <li class="task-item">
+          <input type="checkbox" id="task-4" onchange="toggleTask(this)">
+          <span class="task-text">Deploy staging environment</span>
+          <span class="task-priority priority-high">High</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#22c55e"></span> Add New Task</div>
+      <form id="taskForm" onsubmit="submitTask(event)">
+        <label for="taskName">Task Name</label>
+        <input type="text" id="taskName" name="taskName" placeholder="e.g. Fix checkout flow">
+
+        <label for="taskPriority">Priority</label>
+        <select id="taskPriority" name="priority">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+
+        <label for="taskNotes">Notes</label>
+        <textarea id="taskNotes" name="notes" rows="3" placeholder="Additional details..."></textarea>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="taskUrgent" name="urgent">
+          <label for="taskUrgent" style="margin:0;text-transform:none;font-size:14px;color:var(--text)">
+            Mark as urgent
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">Add Task</button>
+          <button type="button" class="btn btn-ghost" onclick="clearForm()">Clear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SETTINGS ═══════════════ -->
+  <div id="settings" class="page">
+    <h1 class="page-title">Settings</h1>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#4f46e5"></span> Profile</div>
+      <form id="settingsForm" onsubmit="saveSettings(event)">
+        <label for="settingsName">Display Name</label>
+        <input type="text" id="settingsName" name="name" value="QA Tester">
+
+        <label for="settingsEmail">Email</label>
+        <input type="email" id="settingsEmail" name="email" value="qa@taskflow.io">
+
+        <label for="settingsPassword">New Password</label>
+        <input type="password" id="settingsPassword" name="password" placeholder="Leave blank to keep current">
+
+        <label for="settingsRole">Role</label>
+        <select id="settingsRole" name="role">
+          <option value="viewer">Viewer</option>
+          <option value="editor">Editor</option>
+          <option value="admin" selected>Admin</option>
+        </select>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="settingsNotify" name="notifications" checked>
+          <label for="settingsNotify" style="margin:0;text-transform:none;font-size:14px;color:var(--text)">
+            Enable email notifications
+          </label>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#ef4444"></span> Danger Zone</div>
+      <div class="btn-group">
+        <button class="btn btn-danger" onclick="crashApp()">Crash App (Uncaught Error)</button>
+        <button class="btn btn-outline" style="border-color:#ef4444;color:#ef4444"
+                onclick="rejectPromise()">Unhandled Promise Rejection</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── SPA Navigation ───────────────────────────────────────────────
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const pageId = link.dataset.page;
+    navigateTo(pageId);
+  });
+});
+
+function navigateTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+  const target = document.getElementById(pageId);
+  const link = document.querySelector(`.nav-links a[data-page="${pageId}"]`);
+  if (target) target.classList.add('active');
+  if (link) link.classList.add('active');
+
+  history.pushState({ page: pageId }, '', `#${pageId}`);
+  console.info(`Navigated to ${pageId}`);
+}
+
+window.addEventListener('popstate', (e) => {
+  const pageId = e.state?.page || 'dashboard';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  const target = document.getElementById(pageId);
+  const link = document.querySelector(`.nav-links a[data-page="${pageId}"]`);
+  if (target) target.classList.add('active');
+  if (link) link.classList.add('active');
+});
+
+// ── Dashboard Actions ────────────────────────────────────────────
+function createTask() {
+  console.info('[Router] Navigating to tasks page');
+  navigateTo('tasks');
+  document.getElementById('taskName').focus();
+  showToast('Redirected to task form', 'success');
+}
+
+function loadUsers() {
+  console.info('[API] GET /users — fetching user list');
+  fetch('https://jsonplaceholder.typicode.com/users')
+    .then(r => r.json())
+    .then(users => {
+      console.info(`[API] 200 OK — loaded ${users.length} users`);
+      console.warn('[Perf] User list payload is 5.2 KB — consider pagination for large teams');
+      showToast(`Loaded ${users.length} users`, 'success');
+    })
+    .catch(err => {
+      console.error('[API] Failed to load users:', err.message);
+      showToast('Failed to load users', 'error');
+    });
+}
+
+function triggerError() {
+  console.error('[Auth] Session token expired — user must re-authenticate');
+  console.error('[State] Invalid component state:', {
+    component: 'Dashboard',
+    userId: null,
+    session: 'expired'
+  });
+  showToast('Error triggered — check console logs', 'error');
+}
+
+function fetchNotifications() {
+  console.info('[API] GET /notifications — checking for new alerts');
+  fetch('https://jsonplaceholder.typicode.com/posts?_limit=5')
+    .then(r => r.json())
+    .then(data => {
+      console.info(`[Notifications] ${data.length} new notifications received`);
+      console.warn('[Notifications] 2 notifications are older than 30 days — consider archiving');
+      showToast(`${data.length} notifications loaded`, 'success');
+    });
+}
+
+// ── API Test Buttons ─────────────────────────────────────────────
+function fetchSuccess() {
+  console.info('[API] GET /todos/1 — fetching sample resource');
+  fetch('https://jsonplaceholder.typicode.com/todos/1')
+    .then(r => r.json())
+    .then(data => {
+      console.info('[API] 200 OK — response received successfully');
+      console.log('[Debug] Response payload:', data);
+      showToast('API call succeeded (200)', 'success');
+    });
+}
+
+function fetchFailure() {
+  console.warn('[API] Attempting request to known-unstable endpoint');
+  fetch('https://httpstat.us/500')
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .catch(err => {
+      console.error('[API] 500 Internal Server Error — backend is down');
+      console.error('[Retry] Max retries (3) exceeded for /api/checkout');
+      showToast('API call failed (500)', 'error');
+    });
+}
+
+function fetchTimeout() {
+  console.info('[API] GET /slow — starting long-running request');
+  console.warn('[Perf] Request may take >3s — UI should show a loading spinner');
+  showToast('Slow request started...', '');
+  fetch('https://httpstat.us/200?sleep=3000')
+    .then(r => {
+      console.info('[API] Slow request completed — status ' + r.status);
+      console.warn('[Perf] Response took 3000ms — exceeds 2000ms SLA threshold');
+      showToast('Slow request completed', 'success');
+    })
+    .catch(err => {
+      console.error('[API] Slow request timed out:', err.message);
+      showToast('Slow request failed', 'error');
+    });
+}
+
+// ── Task Page ────────────────────────────────────────────────────
+function toggleTask(checkbox) {
+  const textSpan = checkbox.parentElement.querySelector('.task-text');
+  textSpan.classList.toggle('done', checkbox.checked);
+  const status = checkbox.checked ? 'completed' : 'reopened';
+  console.info(`[Tasks] Task ${status}: "${textSpan.textContent}"`);
+  if (checkbox.checked) {
+    console.warn('[Tasks] Completed tasks are auto-archived after 7 days');
+  }
+  showToast(`Task ${status}`, checkbox.checked ? 'success' : '');
+}
+
+function submitTask(e) {
+  e.preventDefault();
+  const name = document.getElementById('taskName').value.trim();
+  if (!name) {
+    console.error('[Validation] Task name is required — form submission blocked');
+    console.warn('[UX] User attempted to submit empty form — consider disabling button');
+    showToast('Task name is required', 'error');
+    return;
+  }
+
+  const priority = document.getElementById('taskPriority').value;
+  const urgent = document.getElementById('taskUrgent').checked;
+
+  console.info('[API] POST /todos — creating new task');
+  console.log('[Debug] Form data:', { name, priority, urgent });
+
+  fetch('https://jsonplaceholder.typicode.com/todos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: name, priority, urgent, completed: false }),
+  })
+    .then(r => r.json())
+    .then(data => {
+      console.info('[API] 201 Created — task saved with id ' + data.id);
+
+      const li = document.createElement('li');
+      li.className = 'task-item';
+      const prioClass = priority === 'high' ? 'priority-high'
+        : priority === 'medium' ? 'priority-medium' : 'priority-low';
+      li.innerHTML = `
+        <input type="checkbox" onchange="toggleTask(this)">
+        <span class="task-text">${name}</span>
+        <span class="task-priority ${prioClass}">${priority}</span>
+      `;
+      document.getElementById('taskList').prepend(li);
+      clearForm();
+      showToast('Task created!', 'success');
+    });
+}
+
+function clearForm() {
+  document.getElementById('taskForm').reset();
+  console.info('[Form] Task form cleared');
+}
+
+// ── Settings Page ────────────────────────────────────────────────
+function saveSettings(e) {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  const settings = Object.fromEntries(formData);
+  if (settings.password) settings.password = '[REDACTED]';
+
+  console.info('[Settings] Saving user profile changes');
+  console.warn('[Security] Password field was modified — force re-auth on next login');
+  console.log('[Debug] Settings payload:', settings);
+
+  fetch('https://jsonplaceholder.typicode.com/users/1', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(settings),
+  })
+    .then(r => r.json())
+    .then(data => {
+      console.info('[API] 200 OK — settings saved successfully');
+      showToast('Settings saved successfully', 'success');
+    });
+}
+
+function deleteAccount() {
+  console.warn('[Danger] User initiated account deletion — requires confirmation');
+  console.error('[API] DELETE /users/1 — destructive action in progress!');
+  fetch('https://jsonplaceholder.typicode.com/users/1', { method: 'DELETE' })
+    .then(r => {
+      console.info('[API] Account deletion response: ' + r.status);
+      showToast('Account deleted (simulated)', 'error');
+    });
+}
+
+// ── Danger Zone ──────────────────────────────────────────────────
+function crashApp() {
+  console.warn('[Danger] User triggered intentional crash for testing');
+  console.error('[Fatal] Uncaught exception incoming — app will break');
+  const obj = null;
+  obj.nonExistentMethod();
+}
+
+function rejectPromise() {
+  console.warn('[Danger] Simulating unhandled async failure');
+  console.error('[Payment] Gateway connection refused — no fallback configured');
+  Promise.reject(new Error('Payment gateway timeout — retry limit exceeded'));
+}
+
+// ── Toast ────────────────────────────────────────────────────────
+function showToast(message, type) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type || ''}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// ── Init ─────────────────────────────────────────────────────────
+console.info('[App] TaskFlow Pro v2.1.0 initialized');
+console.info('[Config] Environment: demo | API: jsonplaceholder.typicode.com');
+console.warn('[Deprecation] Settings API v1 will be removed in v3.0 — migrate to v2');
+</script>
+</body>
+</html>

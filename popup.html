@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+
+    <div class="header">
+      <div class="header-top">
+        <div class="brand">
+          <span class="brand-icon">
+            <svg class="ladybug" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 21.7101C13.3663 21.8987 12.695 22 12 22C8.13401 22 5 18.866 5 15V11.9375C5 9.76288 6.76288 8 8.9375 8H15.0625C17.2371 8 19 9.76288 19 11.9375V15C19 16.9073 18.2372 18.6364 17 19.899" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8.25 7.5C8.25 7.08579 7.91421 6.75 7.5 6.75C7.08579 6.75 6.75 7.08579 6.75 7.5H8.25ZM7.63452 4.58281C7.40411 4.92702 7.49636 5.39285 7.84058 5.62326C8.18479 5.85367 8.65062 5.76141 8.88103 5.41719L7.63452 4.58281ZM17.25 8.5V7.5H15.75V8.5H17.25ZM6.75 7.5V8.5H8.25V7.5H6.75ZM17.25 7.5C17.25 4.60051 14.8995 2.25 12 2.25V3.75C14.0711 3.75 15.75 5.42893 15.75 7.5H17.25ZM12 2.25C10.179 2.25 8.57506 3.17771 7.63452 4.58281L8.88103 5.41719C9.55501 4.41032 10.7005 3.75 12 3.75V2.25Z" fill="var(--bug-stroke)"/>
+              <path d="M19 14H22" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M5 14H2" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M14.5 3.5L17 2" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M9.5 3.5L7 2" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M20.5 20.0002L18.5 19.2002" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M20.5 7.9998L18.5 8.7998" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M3.5 20.0002L5.5 19.2002" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M3.5 7.9998L5.5 8.7998" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M12 21.5V15" stroke="var(--bug-stroke)" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="brand-name">Bug Reporter</span>
+        </div>
+        <div class="header-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+          <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="settingsToggle" title="Settings" aria-label="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+          </svg>
+        </button>
+        </div>
+      </div>
+      <div class="status-pill" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">Loading…</span>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-inner">
+        <div class="settings-title">Capture Limits</div>
+        <div class="setting-row">
+          <label for="maxInteractions">User actions</label>
+          <input type="number" id="maxInteractions" min="5" max="200" step="5" value="30">
+        </div>
+        <div class="setting-row">
+          <label for="maxConsoleLogs">Console logs</label>
+          <input type="number" id="maxConsoleLogs" min="5" max="200" step="5" value="20">
+        </div>
+        <div class="setting-row">
+          <label for="maxNetworkLogs">Network requests</label>
+          <input type="number" id="maxNetworkLogs" min="5" max="200" step="5" value="10">
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Mode Toggle -->
+    <div class="mode-section">
+      <div class="segmented-control" id="modeToggle">
+        <button class="seg-btn active" data-mode="basic">Basic</button>
+        <button class="seg-btn" data-mode="full">Full Report</button>
+        <div class="seg-indicator"></div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form">
+      <div class="field-group">
+        <label for="bugTitle">Title <span class="required">*</span></label>
+        <input type="text" id="bugTitle" placeholder="e.g. Checkout button unresponsive" autocomplete="off">
+      </div>
+
+      <div class="field-group">
+        <label for="bugDescription">Description</label>
+        <textarea id="bugDescription" rows="2" placeholder="Additional context (optional)"></textarea>
+      </div>
+
+      <!-- Full-mode fields -->
+      <div class="full-fields" id="fullFields">
+        <div class="field-row">
+          <div class="field-group field-half">
+            <label for="severity">Severity</label>
+            <select id="severity">
+              <option value="">Select…</option>
+              <option value="critical">Critical</option>
+              <option value="major">Major</option>
+              <option value="minor">Minor</option>
+              <option value="trivial">Trivial</option>
+            </select>
+          </div>
+          <div class="field-group field-half">
+            <label for="priority">Priority</label>
+            <select id="priority">
+              <option value="">Select…</option>
+              <option value="P0">P0 — Blocker</option>
+              <option value="P1">P1 — High</option>
+              <option value="P2">P2 — Medium</option>
+              <option value="P3">P3 — Low</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="stepsToReproduce">Steps to Reproduce</label>
+          <textarea id="stepsToReproduce" rows="3" placeholder="1. Go to…&#10;2. Click on…&#10;3. Observe…"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="expectedResult">Expected Result</label>
+          <textarea id="expectedResult" rows="2" placeholder="What should happen"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="actualResult">Actual Result</label>
+          <textarea id="actualResult" rows="2" placeholder="What actually happened"></textarea>
+        </div>
+      </div>
+
+      <button id="reportBtn" disabled>
+        <span class="btn-text">Report Bug</span>
+        <span class="btn-loading" hidden>
+          <span class="spinner"></span> Generating…
+        </span>
+      </button>
+    </div>
+
+    <!-- Toast messages -->
+    <div class="toast" id="toastError" role="alert"></div>
+    <div class="toast toast-success" id="toastSuccess" role="status">Report downloaded!</div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span id="versionText">v1.0.0</span>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
