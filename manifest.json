@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Bug Reporter",
   "version": "1.0.0",
-  "description": "Always-on bug reporting tool for QA engineers. Captures screenshots, user interactions, console logs, and network requests automatically.",
+  "description": "One-click bug reports with screenshots, console logs, network requests, and user actions captured automatically.",
   "permissions": [
     "activeTab",
     "tabs",
